@@ -2,6 +2,8 @@ package com.atlassian.performance.tools.infrastructure.api.profiler
 
 import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import java.lang.Exception
+import java.util.concurrent.TimeUnit
 
 /**
  *  Asynchronous profiler. See https://github.com/jvm-profiling-tools/async-profiler#basic-usage
@@ -19,8 +21,24 @@ class AsyncProfiler : Profiler {
         ssh: SshConnection,
         pid: Int
     ): RemoteMonitoringProcess {
-        ssh.execute("./async-profiler/profiler.sh -b 20000000 start $pid")
-        return ProfilerProcess(pid)
+        val retryLimit = 4
+        var attemp = 0
+        while (true){
+            try {
+                ssh.execute("./async-profiler/profiler.sh -b 20000000 start $pid")
+                return ProfilerProcess(pid)
+            } catch (e : Exception){
+                attemp++
+                if(attemp > retryLimit){
+                    throw RuntimeException("Failed to execute profiler.sh despite $retryLimit attempts.", e)
+                } else{
+                    //The JVM seems to be busy, retying in 5 seconds
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(5))
+                }
+            }
+
+        }
+
     }
 
     private class ProfilerProcess(private val pid: Int) : RemoteMonitoringProcess {
