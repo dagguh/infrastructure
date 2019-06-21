@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.jvmtasks.api.TaskTimer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.commons.io.FilenameUtils
 import java.net.URI
+import java.nio.file.Paths
 import java.time.Duration
 import java.time.Instant
 
@@ -39,10 +40,16 @@ internal class HttpDatasetPackage(
     }
 
     private fun unzip(ssh: SshConnection, resourceName: String, timeForUnzipping: Duration): String {
-        return FileArchiver()
+        val topPaths = FileArchiver()
             .verboseUnzip(ssh, resourceName, timeForUnzipping)
-            .first()
-            .removeSuffix("/")
+            .map { Paths.get(it) }
+            .map { it.first() }
+            .filter { it.toString().isNotEmpty() }
+            .toSet()
+        val theOnlyTopPath = topPaths
+            .singleOrNull()
+            ?: throw Exception("Expected a single path, but got: $topPaths")
+        return theOnlyTopPath.toString()
     }
 
     override fun toString(): String {
