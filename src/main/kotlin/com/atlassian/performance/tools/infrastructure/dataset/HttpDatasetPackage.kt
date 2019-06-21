@@ -39,23 +39,10 @@ internal class HttpDatasetPackage(
     }
 
     private fun unzip(ssh: SshConnection, resourceName: String, timeForUnzipping: Duration): String {
-        val filesBefore = ls(ssh)
-        FileArchiver().unzip(ssh, resourceName, timeForUnzipping)
-        val filesAfter = ls(ssh)
-        val newFiles = filesAfter - filesBefore
-        return newFiles.singleOrNull()
-            ?: throw Exception("Expected one new folder. Found $newFiles.")
-    }
-
-    private fun ls(
-        ssh: SshConnection
-    ): Set<String> {
-        return ssh
-            .execute("ls")
-            .output
-            .split("\\s".toRegex())
-            .filter { it.isNotBlank() }
-            .toSet()
+        return FileArchiver()
+            .verboseUnzip(ssh, resourceName, timeForUnzipping)
+            .first()
+            .removeSuffix("/")
     }
 
     override fun toString(): String {
