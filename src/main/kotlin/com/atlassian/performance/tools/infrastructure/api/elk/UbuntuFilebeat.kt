@@ -52,7 +52,7 @@ class UbuntuFilebeat(
 
     private fun uploadFile(localFile: File, ssh: SshConnection, config: ElasticConfig) {
         val fileName = localFile.name
-        val remoteTmpPath = Paths.get("/tmp/", exe, fileName).toString()
+        val remoteTmpPath = Paths.get("/tmp/", fileName).toString()
         val remotePath = Paths.get(config.pathHome, fileName).toString()
         ssh.upload(localFile, remoteTmpPath)
         ssh.execute("sudo cp $remoteTmpPath $remotePath")
@@ -72,7 +72,7 @@ class UbuntuFilebeat(
     }
 
     private fun validate(config: ElasticConfig, ssh: SshConnection) {
-        ssh.execute("$exe test config -c ${config.configFilePath}")
+        ssh.execute("sudo $exe test config -c ${config.configFilePath}")
     }
 
     private fun setup(ssh: SshConnection) {

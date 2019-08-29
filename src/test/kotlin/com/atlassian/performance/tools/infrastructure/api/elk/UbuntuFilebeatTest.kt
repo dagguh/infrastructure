@@ -39,8 +39,8 @@ class UbuntuFilebeatTest {
         val ssh = RememberingSshConnection()
 
         val expectedUploads = listOf(
-            "$temporaryFolder/filebeat.yml -> /tmp/filebeat/filebeat.yml",
-            "$temporaryFolder/filebeat-processor-script-parseDuration.js -> /tmp/filebeat/filebeat-processor-script-parseDuration.js"
+            "$temporaryFolder/filebeat.yml -> /tmp/filebeat.yml",
+            "$temporaryFolder/filebeat-processor-script-parseDuration.js -> /tmp/filebeat-processor-script-parseDuration.js"
         )
 
         val expectedCommands = listOf(
@@ -60,8 +60,8 @@ class UbuntuFilebeatTest {
             // uploads to tmp happen now...
 
             // cp tmp files to filebeat pathHome
-            "sudo cp /tmp/filebeat/filebeat.yml /etc/filebeat/filebeat.yml",
-            "sudo cp /tmp/filebeat/filebeat-processor-script-parseDuration.js /etc/filebeat/filebeat-processor-script-parseDuration.js",
+            "sudo cp /tmp/filebeat.yml /etc/filebeat/filebeat.yml",
+            "sudo cp /tmp/filebeat-processor-script-parseDuration.js /etc/filebeat/filebeat-processor-script-parseDuration.js",
             "echo \"setup.kibana.host: 'example.com:5601'\" | sudo tee -a /etc/filebeat/filebeat.yml",
             "echo \"output.elasticsearch.hosts: ['example.com:9200']\" | sudo tee -a /etc/filebeat/filebeat.yml",
             "echo \"fields: {}\" | sudo tee -a /etc/filebeat/filebeat.yml",
