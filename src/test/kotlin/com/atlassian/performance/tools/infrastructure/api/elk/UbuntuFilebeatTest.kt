@@ -1,26 +1,47 @@
 package com.atlassian.performance.tools.infrastructure.api.elk
 
 import com.atlassian.performance.tools.awsinfrastructure.api.kibana.Kibana
-import com.atlassian.performance.tools.infrastructure.api.elk.UbuntuFilebeat.Companion.FILEBEAT_VU_CONFIG_FILE
-import com.atlassian.performance.tools.infrastructure.api.elk.UbuntuFilebeat.Companion.FILEBEAT_VU_SUPPORTING_FILES
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.util.Files
 import org.junit.Test
-import java.io.File
 import java.net.URI
+import java.nio.file.Paths
 
 class UbuntuFilebeatTest {
     @Test
-    fun shouldDownloadConfigureAndStartDuringCallToInstall(){
+    fun shouldDownloadConfigureAndStartDuringCallToInstall() {
         val kibana = Kibana(URI("example.com:5601"), listOf(URI("example.com:9200")))
 
-        val ufb = UbuntuFilebeat(kibana, FILEBEAT_VU_CONFIG_FILE, FILEBEAT_VU_SUPPORTING_FILES)
+        val temporaryFolder = Files.newTemporaryFolder()
+        val ufb = UbuntuFilebeat(
+            kibana,
+            UbuntuFilebeat.FILEBEAT_VU_CONFIG_RESOURCE_PATH.let { resourcePath ->
+                UbuntuFilebeat::class.java.getResourceAsStream(resourcePath).use { resourceStream ->
+                    temporaryFolder.resolve(Paths.get(resourcePath).fileName.toString()).also { file ->
+                        file.outputStream().use {
+                            resourceStream.transferTo(it)
+                        }
+                    }
+                }
+            },
+            UbuntuFilebeat.FILEBEAT_VU_SUPPORTING_RESOURCE_PATH.map { resourcePath ->
+                UbuntuFilebeat::class.java.getResourceAsStream(resourcePath).use { resourceStream ->
+                    temporaryFolder.resolve(Paths.get(resourcePath).fileName.toString()).also { file ->
+                        file.outputStream().use {
+                            resourceStream.transferTo(it)
+                        }
+                    }
+                }
+            },
+            fields = emptyMap()
+        )
         val ssh = RememberingSshConnection()
 
-        val expectedUploads = mutableListOf(
-            "${File(FILEBEAT_VU_CONFIG_FILE).toPath()} -> /tmp/filebeat/filebeat.yml"
+        val expectedUploads = listOf(
+            "$temporaryFolder/filebeat.yml -> /tmp/filebeat/filebeat.yml",
+            "$temporaryFolder/filebeat-processor-script-parseDuration.js -> /tmp/filebeat/filebeat-processor-script-parseDuration.js"
         )
-        FILEBEAT_VU_SUPPORTING_FILES.forEach { f -> expectedUploads.add("${File(f).toPath()} -> /tmp/filebeat/${File(f).name}") }
 
         val expectedCommands = listOf(
             // boilerplate (possibly too fragile for this test?)

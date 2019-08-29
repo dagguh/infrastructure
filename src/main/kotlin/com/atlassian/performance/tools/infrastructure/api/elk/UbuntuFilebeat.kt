@@ -84,10 +84,10 @@ class UbuntuFilebeat(
     }
 
     companion object {
-        val FILEBEAT_VU_CONFIG_FILE = UbuntuFilebeat::class.java.getResource("/elk/filebeat/vu/action-metrics/filebeat.yml").toURI()
+        val FILEBEAT_VU_CONFIG_RESOURCE_PATH = "/elk/filebeat/vu/action-metrics/filebeat.yml"
 
-        val FILEBEAT_VU_SUPPORTING_FILES = listOf(
-            UbuntuFilebeat::class.java.getResource("/elk/filebeat/vu/action-metrics/filebeat-processor-script-parseDuration.js").toURI()
+        val FILEBEAT_VU_SUPPORTING_RESOURCE_PATH = listOf(
+            "/elk/filebeat/vu/action-metrics/filebeat-processor-script-parseDuration.js"
         )
     }
 }
