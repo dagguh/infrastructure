@@ -41,8 +41,8 @@ class ElasticConfig(
     }
 
     fun clean(shell: SshConnection) : ElasticConfig {
-        shell.execute("[ -f $configFilePath ] && mv $configFilePath $configFilePath.orig")
-        shell.execute("touch $configFilePath")
+        shell.execute("[ -f $configFilePath ] && sudo mv $configFilePath $configFilePath.orig")
+        shell.execute("sudo touch $configFilePath")
         return this
     }
 
