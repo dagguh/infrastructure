@@ -14,7 +14,7 @@ class UbuntuFilebeat(
     private val supportingFiles: List<URI>
 ) {
     private val exe = "filebeat"
-    private val debFile = "$exe-7.3.1-i386.deb"
+    private val debFile = "$exe-7.3.1-amd64.deb"
     private val rootDownloadUri = URI("https://artifacts.elastic.co/downloads/beats/$exe/")
 
     fun install(ssh: SshConnection) {
