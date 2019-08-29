@@ -29,18 +29,21 @@ class UbuntuFilebeatTest {
             "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget",
 
             // download and install
-            "wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.3.1-i386.deb -q --server-response",
-            "sudo dpkg -i filebeat-7.3.1-i386.deb",
+            "wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.3.1-amd64.deb -q --server-response",
+            "sudo dpkg -i filebeat-7.3.1-amd64.deb",
 
             // configure
-            "[ -f /etc/filebeat/filebeat.yml ] && mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.orig",
-            "touch /etc/filebeat/filebeat.yml",
+            "[ -f /etc/filebeat/filebeat.yml ] && sudo mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.orig",
+            "sudo touch /etc/filebeat/filebeat.yml",
 
             // uploads to tmp happen now...
 
             // cp tmp files to filebeat pathHome
             "sudo cp /tmp/filebeat/filebeat.yml /etc/filebeat/filebeat.yml",
             "sudo cp /tmp/filebeat/filebeat-processor-script-parseDuration.js /etc/filebeat/filebeat-processor-script-parseDuration.js",
+            "echo \"setup.kibana.host: 'example.com:5601'\" | sudo tee -a /etc/filebeat/filebeat.yml",
+            "echo \"output.elasticsearch.hosts: ['example.com:9200']\" | sudo tee -a /etc/filebeat/filebeat.yml",
+            "echo \"fields: {}\" | sudo tee -a /etc/filebeat/filebeat.yml",
 
             // validate
             "filebeat test config -c /etc/filebeat/filebeat.yml",

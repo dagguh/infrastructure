@@ -10,8 +10,9 @@ import java.time.Duration
 
 class UbuntuFilebeat(
     private val kibana: Kibana,
-    private val configFile: URI,
-    private val supportingFiles: List<URI>
+    private val configFile: File,
+    private val supportingFiles: List<File>,
+    private val fields: Map<String, Any>
 ) {
     private val exe = "filebeat"
     private val debFile = "$exe-7.3.1-amd64.deb"
@@ -38,13 +39,13 @@ class UbuntuFilebeat(
         val config = ElasticConfig(exe).clean(ssh)
 
         // overwrite the existing file
-        uploadFile(File(configFile), ssh, config)
+        uploadFile(configFile, ssh, config)
 
         // upload supporting files to the home directory
-        supportingFiles.forEach {
-            uri -> uploadFile(File(uri), ssh, config)
+        supportingFiles.forEach { uri ->
+            uploadFile(uri, ssh, config)
         }
-
+        appendDynamicConfig(config, ssh)
         //validate config
         validate(config, ssh)
     }
@@ -55,6 +56,19 @@ class UbuntuFilebeat(
         val remotePath = Paths.get(config.pathHome, fileName).toString()
         ssh.upload(localFile, remoteTmpPath)
         ssh.execute("sudo cp $remoteTmpPath $remotePath")
+    }
+
+    private fun appendDynamicConfig(
+        config: ElasticConfig,
+        ssh: SshConnection
+    ) {
+        config.append("setup.kibana.host: '${kibana.address}'", ssh)
+        val hostsYaml = kibana
+            .elasticsearchHosts
+            .map { it.toString() }
+            .let { config.toYamlArray(it) }
+        config.append("output.elasticsearch.hosts: $hostsYaml", ssh)
+        config.append("fields: ${config.toYamlDictionary(fields)}", ssh)
     }
 
     private fun validate(config: ElasticConfig, ssh: SshConnection) {
