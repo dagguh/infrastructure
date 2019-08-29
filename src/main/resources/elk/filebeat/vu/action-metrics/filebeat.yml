@@ -20,15 +20,6 @@ filebeat.inputs:
 setup.template.settings:
   index.number_of_shards: 1
 
-# not really used yet but tell it where kibana is
-setup.kibana:
-  host: "34.253.121.248:5601"
-
-# output to elasticsearch
-output:
-  elasticsearch:
-    hosts: ["34.253.121.248:9200"]
-
 # TESTING
 # for test purposes comment out the elasticsearch block and uncomment this, then run
 # $./filebeat run -c filebeat-jpt-action-metrics.yml -e
@@ -45,5 +36,6 @@ processors:
       lang: javascript
       id: parseDuration
       file: ${path.config}/filebeat-processor-script-parseDuration.js
-  - add_host_metadata: ~
+  - add_host_metadata:
+      netinfo.enabled: true
   - add_cloud_metadata: ~
