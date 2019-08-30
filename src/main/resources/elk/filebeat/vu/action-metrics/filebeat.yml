@@ -15,7 +15,7 @@ filebeat.inputs:
     enabled: true
     paths:
       # this is the default location of the logs on the VU hosts
-      - ${HOME}/test-results/*/action-metrics.jpt
+      - /home/ubuntu/test-results/*/action-metrics.jpt
 
 setup.template.settings:
   index.number_of_shards: 1
