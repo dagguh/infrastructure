@@ -67,7 +67,7 @@ class UbuntuFilebeatTest {
             "echo \"fields: {}\" | sudo tee -a /etc/filebeat/filebeat.yml",
 
             // validate
-            "filebeat test config -c /etc/filebeat/filebeat.yml",
+            "sudo filebeat test config -c /etc/filebeat/filebeat.yml",
 
             // start
             "sudo filebeat setup --dashboards",
