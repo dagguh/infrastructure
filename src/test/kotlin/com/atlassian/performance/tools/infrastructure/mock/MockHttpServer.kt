@@ -2,13 +2,11 @@ package com.atlassian.performance.tools.infrastructure.mock
 
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
-import org.rnorth.ducttape.unreliables.Unreliables.retryUntilSuccess
 import java.net.InetSocketAddress
 import java.net.URI
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 
 internal class MockHttpServer(private val port: Int) {
@@ -29,7 +27,7 @@ internal class MockHttpServer(private val port: Int) {
     }
 
     private fun startHttpServer(executor: Executor): HttpServer {
-        val httpServer = retryUntilSuccess(10, TimeUnit.SECONDS) { HttpServer.create(InetSocketAddress(port), 0) }
+        val httpServer = HttpServer.create(InetSocketAddress(port), 0)
         httpServer.executor = executor
 
         handlers.forEach { handler ->
