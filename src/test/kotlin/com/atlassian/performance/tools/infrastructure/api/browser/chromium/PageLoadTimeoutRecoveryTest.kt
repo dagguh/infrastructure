@@ -17,15 +17,14 @@ internal class PageLoadTimeoutRecoveryTest {
     internal fun run(chromium: Browser) {
         val remoteChromedriverPort = 9515
         val localChromedriverPort = 9525
-        val mockServerPort = 8500
         val remoteMockServerPort = 8500
-        val httpServer = MockHttpServer(mockServerPort)
-        val fastResource = httpServer.register(FastResponse())
-        val slowResource = httpServer.register(SlowResponse())
-        httpServer.start().use {
+        val httpServer = MockHttpServer()
+        httpServer.start().use { server ->
+            val fastResource = server.register(FastResponse())
+            val slowResource = server.register(SlowResponse())
             SshUbuntuContainer().start().use { sshUbuntu ->
                 val ssh = sshUbuntu.toSsh()
-                ssh.forwardRemotePort(mockServerPort, remoteMockServerPort).use {
+                ssh.forwardRemotePort(fastResource.port, remoteMockServerPort).use {
                     ssh.forwardLocalPort(localChromedriverPort, remoteChromedriverPort).use {
                         ssh.newConnection().use { connection ->
                             chromium.install(connection)
