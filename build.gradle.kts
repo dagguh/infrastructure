@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm").version("1.2.70")
     `java-library`
     id("com.atlassian.performance.tools.gradle-release").version("0.5.0")
+    id("com.gradle.build-scan").version("2.4.2")
 }
 
 configurations.all {
@@ -103,4 +104,10 @@ tasks["check"].dependsOn(testIntegration)
 tasks.getByName("wrapper", Wrapper::class).apply {
     gradleVersion = "5.2.1"
     distributionType = Wrapper.DistributionType.ALL
+}
+
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
 }

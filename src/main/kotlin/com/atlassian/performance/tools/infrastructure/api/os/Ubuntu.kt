@@ -53,8 +53,8 @@ class Ubuntu {
                     stderr = Level.TRACE
                 )
             } catch (e: Exception) {
+                ssh.execute("sudo kill -9 \$(ps x | grep apt-get | cut -d' ' -f2 | tail -n +2)")
                 ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
-                ssh.execute("kill -9 \$(ps x | grep apt-get | cut -d' ' -f2 | tail -n +2)")
                 throw Exception("Failed an attempt to install $packages", e)
             }
         }
