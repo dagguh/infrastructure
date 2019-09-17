@@ -54,7 +54,7 @@ class Ubuntu {
                 )
             } catch (e: Exception) {
                 ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
-                ssh.execute("killall -9 apt-get")
+                ssh.execute("kill \$(ps x | grep apt-get | cut -d' ' -f2 | tail -n +2)")
                 throw Exception("Failed an attempt to install $packages", e)
             }
         }
