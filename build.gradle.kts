@@ -110,4 +110,5 @@ tasks.getByName("wrapper", Wrapper::class).apply {
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
+    publishAlways()
 }
