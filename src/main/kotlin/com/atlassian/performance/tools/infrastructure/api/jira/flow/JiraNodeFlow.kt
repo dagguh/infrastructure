@@ -1,7 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow
 
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -42,7 +44,17 @@ class JiraNodeFlow {
         postInstallHooks.add(hook)
     }
 
-    internal fun listPostInstallHooks(): Iterable<InstalledJiraHook> = postInstallHooks
+    internal fun runPostInstallHooks(
+        ssh: SshConnection,
+        jira: InstalledJira
+    ) {
+        while (true) {
+            postInstallHooks
+                .poll()
+                ?.run(ssh, jira, this)
+                ?: break
+        }
+    }
 
     fun hookPreStart(
         hook: InstalledJiraHook
@@ -50,7 +62,17 @@ class JiraNodeFlow {
         preStartHooks.add(hook)
     }
 
-    internal fun listPreStartHooks(): Iterable<InstalledJiraHook> = preStartHooks
+    internal fun runPreStartHooks(
+        ssh: SshConnection,
+        jira: InstalledJira
+    ) {
+        while (true) {
+            preStartHooks
+                .poll()
+                ?.run(ssh, jira, this)
+                ?: break
+        }
+    }
 
     fun hookPostStart(
         hook: StartedJiraHook
@@ -58,5 +80,22 @@ class JiraNodeFlow {
         postStartHooks.add(hook)
     }
 
-    internal fun listPostStartHooks(): Iterable<StartedJiraHook> = postStartHooks
+    internal fun runPostStartHooks(
+        ssh: SshConnection,
+        jira: StartedJira
+    ) {
+        while (true) {
+            postStartHooks
+                .poll()
+                ?.run(ssh, jira, this)
+                ?: break
+        }
+    }
+
+    fun copy(): JiraNodeFlow = JiraNodeFlow()
+        .also { it.preInstallHooks += this.preInstallHooks }
+        .also { it.postInstallHooks += this.postInstallHooks }
+        .also { it.preStartHooks += this.preStartHooks }
+        .also { it.postStartHooks += this.postStartHooks }
+        .also { it.reports += this.reports }
 }
