@@ -3,7 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.infrastructure.api.distribution.ProductDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PreInstallFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -18,7 +18,7 @@ class ParallelInstallation(
     override fun install(
         ssh: SshConnection,
         server: TcpServer,
-        flow: JiraNodeFlow
+        flow: PreInstallFlow
     ): InstalledJira {
         val pool = Executors.newCachedThreadPool { runnable ->
             Thread(runnable, "jira-installation-${runnable.hashCode()}")

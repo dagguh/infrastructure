@@ -10,12 +10,12 @@ import java.io.File
 import java.nio.file.Path
 import java.time.Duration
 
-class JiraNodeFlowTest {
+class PreInstallFlowTest {
 
     @Test
     fun shouldHookDuringListing() {
         val counter = CountingHook()
-        val flow = JiraNodeFlow.empty().apply {
+        val flow = PreInstallFlow.empty().apply {
             hook(counter)
             hook(HookingHook(counter))
             hook(counter)
@@ -30,7 +30,7 @@ class JiraNodeFlowTest {
     @Test
     fun shouldHookToTheTailDuringListing() {
         val counter = CountingHook()
-        val flow = JiraNodeFlow.empty().apply {
+        val flow = PreInstallFlow.empty().apply {
             hook(counter)
             hook(counter)
             hook(HookingHook(counter))

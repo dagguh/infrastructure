@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PreInstallFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostStartFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.HookedJiraInstallation
@@ -26,7 +26,7 @@ class HookedJiraStartIT {
     @Test
     fun shouldStartJiraWithDefaultHooks() {
         // given
-        val flow = JiraNodeFlow.default()
+        val flow = PreInstallFlow.default()
         val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
@@ -71,7 +71,7 @@ class HookedJiraStartIT {
     @Test
     fun shouldDownloadPartialReportsInCaseOfFailure() {
         // given
-        val flow = JiraNodeFlow.empty().apply {
+        val flow = PreInstallFlow.empty().apply {
             hook(EarlyUbuntuSysstat())
             hook(FailingHook())
         }
