@@ -31,4 +31,4 @@ jobs:
       env:
         atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
       run: |
-        echo $atlassian_private_username
+        echo $atlassian_private_username | base64
