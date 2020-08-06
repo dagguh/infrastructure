@@ -25,14 +25,10 @@ jobs:
         path: ~/.gradle
         key: ${{ runner.os }}-${{ hashFiles('gradle') }}
     - name: Build
-      run: ./gradlew build
-    - name: Upload test reports
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-reports
-        path: build/reports/tests
+      run: ./gradlew assemble
     - name: Release
       if: github.event.inputs.release == 'true'
+      env:
+        atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
       run: |
-        ./gradlew release
-        ./gradlew publish
+        echo $atlassian_private_username
