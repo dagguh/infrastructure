@@ -26,6 +26,13 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.0...master
 
+### Added
+- Follow official Docker installation instructions.
+  Gain simultaneous compatibility with Ubuntu 16.04, 18.04, 19.10 and 20.04.
+  Affect `MySqlDatabase`, `UniversalSplunkForwarder` and `AtlassianSplunkForwarder`. Fix [JPERF-449].
+
+[JPERF-449]: https://ecosystem.atlassian.net/browse/JPERF-449
+
 ## [4.17.0] - 2020-06-03
 [4.17.0]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...release-4.17.0
 
