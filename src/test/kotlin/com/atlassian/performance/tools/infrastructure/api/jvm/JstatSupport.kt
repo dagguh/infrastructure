@@ -4,6 +4,7 @@ import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import java.io.File
 import java.time.Duration
 
@@ -40,13 +41,15 @@ class JstatSupport(
             maxAttempts = 3,
             backoff = ExponentialBackoff(baseBackoff = Duration.ofSeconds(1))
         )
+
         val jstatMonitoring = jdk.jstatMonitoring.start(connection, pid.toInt())
         waitForJstatToCollectSomeData()
         jstatMonitoring.stop(connection)
-        val jstatLog = connection.execute("cat ${jstatMonitoring.getResultPath()}").output
-        val jstatHeader = jstatLog.substring(timestampLength, jstatLog.indexOf('\n'))
 
-        Assertions.assertThat(jstatHeader).contains(this.expectedStats)
+        val jstatLog = connection.execute("cat ${jstatMonitoring.getResultPath()}").output
+        assertThat(jstatLog.length).`as`("length of $jstatLog").isGreaterThan(timestampLength)
+        val jstatHeader = jstatLog.substring(timestampLength, jstatLog.indexOf('\n'))
+        assertThat(jstatHeader).contains(this.expectedStats)
     }
 
     private fun waitForJstatToCollectSomeData() {
